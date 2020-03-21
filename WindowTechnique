@@ -1,0 +1,23 @@
+#include <bits/stdc++.h>
+using namespace std;
+int main()
+{
+    int n,k;
+    cin>>n>>k;
+    int arr[n];
+    for(int i=0; i<n; i++)cin>>arr[i];
+    int ind =1;
+    int minsum=999999;
+    int min_sum = 0;
+    for(int i=0; i<k; i++) min_sum +=arr[i];
+    int window_sum = min_sum;
+    for(int i=k; i<n; i++){
+        window_sum += arr[i]- arr[i-k];
+        if(window_sum < min_sum){
+            ind =i-k+2;
+            min_sum = min(min_sum, window_sum);
+        }
+    }
+    cout<<ind<<endl;
+    return 0;
+}
