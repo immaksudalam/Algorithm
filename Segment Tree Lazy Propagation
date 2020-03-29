@@ -1,0 +1,78 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define ll long long
+const ll N = 200010;
+#define in1(a) scanf("%lld", &a)
+#define in2(a,b) scanf("%lld%lld", &a, &b)
+ll tree[4*N], arr[N], lz[4*N];
+
+void lazy(ll node, ll L, ll R)
+{
+    if(lz[node]>0){
+        tree[node]+=(R-L+1)*(lz[node]);
+    }
+    if(L!=R){
+        lz[2*node]+=lz[node];
+        lz[2*node+1]+=lz[node];
+    }
+    lz[node]=0;
+    return;
+}
+
+void Update(ll node, ll L, ll R, ll l, ll r)
+{
+    lazy(node, L, R);
+
+    if(L>R or L>r or R<l)return;
+
+    if(L>= l and R<=r)
+    {
+        tree[node]++;
+        if(L!=R){
+            lz[2*node]++;
+            lz[2*node+1]++;
+        }
+        return;
+    }
+    ll mid = (L+R)/2;
+    Update(2*node, L, mid, l, r);
+    Update(2*node+1, mid+1, R, l, r);
+    return;
+}
+
+ll query(ll node, ll L, ll R, ll pos)
+{
+    lazy(node, L, R);
+    if(L>pos or R<pos)return 0;
+    if(L==R and R==pos) return tree[node];
+    ll mid = (L+R)/2;
+    ll x = query(2*node, L, mid,pos)+query(2*node+1, mid+1, R, pos);
+    return x;
+}
+vector<ll>v;
+int main()
+{
+   ll n,m;
+
+   in2(n,m);
+   for(int i=0; i<n; i++)in1(arr[i]);
+   while(m--){
+       ll l,r;
+       in2(l,r);
+       Update(1, 1, n, l, r);
+   }
+   for(int i=1; i<=n; i++){
+       ll x = query(1, 1, n, i);
+       v.push_back(x);
+   }
+
+   sort(v.begin(), v.end());
+   sort(arr, arr+n);
+   ll mxsum=0;
+
+   for(int i=0; i<n; i++){
+       mxsum+=arr[i]*v[i];
+   }
+   printf("%lld\n",mxsum);
+   return 0;
+}
