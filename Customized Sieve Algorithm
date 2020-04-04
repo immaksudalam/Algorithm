@@ -1,0 +1,28 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int N=100000025;
+#define ll long long
+bool flag[N];
+int main()
+{
+    for(int i=2; i*i<N; i++){
+        if(!flag[i]){
+            for(int j=i*i; j<N; j+=i){
+                flag[j]=1;
+            }
+        }
+    }
+
+    int ptr=100;
+    for(int i=2; i<N; i++){
+        if(!flag[i]){
+            if(ptr==100){
+                cout<<i<<endl;
+                ptr=1;
+            }
+            else ptr++;
+        }
+
+    }
+    return 0;
+}
