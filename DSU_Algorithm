@@ -1,0 +1,56 @@
+#include <bits/stdc++.h>
+using namespace std;
+int parent[26], Rank[26];
+
+void make_set(int n)
+{
+    parent[n] = n;
+    Rank[n] =1;
+}
+int find(int x)
+{
+    if(parent[x]!=x) parent[x] = find(parent[x]);
+    return parent[x];
+}
+int joint_set(int x, int y)
+{
+    int p = find(x);
+    int q = find(y);
+    if(p != q){
+        if(Rank[p] > Rank[q])
+            Rank[x]+=Rank[y], parent[q] = p;
+        else
+            Rank[y]+= Rank[x], parent[p] = q;
+        return 1;
+    }
+    return 0;
+}
+int main(){
+    int T;
+    char c;
+    string s;
+
+    scanf("%d\n\n",&T);
+
+    for(int tc=1;tc<=T;tc++){
+        getline(cin,s);
+       int n=s[0]-'A'+1;
+
+       int  ans=n;
+        for(int i=0;i<n;i++) make_set(i);
+
+        while(1){
+            if(!getline(cin,s) || s.empty()) break;
+
+            int x=s[0]-'A';
+            int y=s[1]-'A';
+            ans-= joint_set(x, y);
+        }
+
+        if(tc!=1) printf("\n");
+        printf("%d\n",ans);
+    }
+
+    return 0;
+}
+
