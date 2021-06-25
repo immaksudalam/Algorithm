@@ -1,0 +1,131 @@
+Histogram
+
+import numpy as np
+import matplotlib.pyplot as plt
+import cv2
+import matplotlib.image as mpimg
+# Reading the original image, here 0 implies that image is read as grayscale
+image = cv2.imread("mine.jpg", 0)
+
+# Generating the histogram of the original image
+hist,bins = np.histogram(image.flatten(),256,[0,256])
+
+# Generating the cumulative distribution function of the original image
+cdf = hist.cumsum()
+cdf_normalized = cdf * hist.max()/ cdf.max()
+# Applying Histogram Equalization on the original image
+image_equalized = cv2.equalizeHist(image)
+
+# Generating the histogram of the equalized image
+hist_equalized,bins_equalized = np.histogram(image_equalized.flatten(),256,[0,256])
+
+# Generating the cumulative distribution function of the original image
+cdf_equalized = hist_equalized.cumsum()
+cdf_equalized_normalized = cdf_equalized * hist_equalized.max()/ cdf_equalized.max()
+#Plotting the Original and Histogram Equalized Image, Histogram and CDF
+fig, axs = plt.subplots(2, 2)
+
+axs[0, 0].imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+axs[0, 0].axis('off')
+axs[0, 0].set_title('Original Image')
+
+axs[0, 1].imshow(cv2.cvtColor(image_equalized, cv2.COLOR_BGR2RGB))
+axs[0, 0].axis('off')
+axs[0, 1].set_title('Histogram Equalized Image')
+
+
+axs[1, 0].plot(cdf_normalized, color = 'b')
+axs[1, 0].hist(image.flatten(),256,[0,256], color = 'r')
+axs[1, 0].legend(('cdf','histogram'), loc = 'upper left')
+
+
+
+axs[1, 1].plot(cdf_equalized_normalized, color = 'b')
+axs[1, 1].hist(image_equalized.flatten(),256,[0,256], color = 'r')
+axs[1, 1].legend(('cdf_equalized','histogram_equalized'), loc = 'upper left')
+
+
+# Hide x labels and tick labels for top plots and y ticks for right plots.
+for ax in axs.flat:
+    ax.label_outer()
+
+----------------------------------------------------------------
+wavlet
+
+>>> import pywt
+>>> cA, cD = pywt.dwt([1, 2, 3, 4], 'db1')
+import numpy as np
+import matplotlib.pyplot as plt
+import pywt
+import pywt.data
+from matplotlib.image import imread
+A = imread("mine.jpg")
+original = np.mean(A, -1)
+titles = ['Approximation', ' Horizontal detail',
+          'Vertical detail', 'Diagonal detail']
+coeffs2 = pywt.dwt2(original, 'bior1.3')
+LL, (LH, HL, HH) = coeffs2
+fig = plt.figure(figsize=(12, 3))
+for i, a in enumerate([LL, LH, HL, HH]):
+    ax = fig.add_subplot(1, 4, i + 1)
+    ax.imshow(a, interpolation="nearest", cmap=plt.cm.gray)
+    ax.set_title(titles[i], fontsize=10)
+    ax.set_xticks([])
+    ax.set_yticks([])
+fig.tight_layout()
+plt.show()
+-------------------------------------------------
+Image filtering
+
+import numpy as np
+import matplotlib.pyplot as plt
+import skimage
+import skimage.color as skic
+import skimage.filters as skif
+import skimage.data as skid
+import skimage.util as sku
+%matplotlib inline
+import cv2
+def show(img):
+    fig, ax = plt.subplots(1, 1, figsize=(8, 8))
+    ax.imshow(img, cmap=plt.cm.gray)
+    ax.set_axis_off()
+    plt.show()
+img = cv2.imread("mine.jpg")
+img = skic.rgb2gray(img)
+show(img)
+show(skif.gaussian(img, 5.))
+sobimg = skif.sobel(img)
+show(sobimg)
+from ipywidgets import widgets
+
+@widgets.interact(x=(0.01, .2, .005))
+def edge(x):
+    show(sobimg < x)
+  image = cv2.imread("mine.jpg")
+img = skimage.img_as_float(image)
+
+# We take a portion of the image to show the details.
+img = img[50:200, 150:300]
+
+# We add Gaussian noise.
+img_n = sku.random_noise(img)
+show(img_n)
+image = cv2.imread("mine.jpg")
+img_r = skimage.restoration.denoise_tv_bregman(
+    image, 5.)
+
+fig, (ax1, ax2, ax3) = plt.subplots(
+    1, 3, figsize=(12, 8))
+
+ax1.imshow(image)
+ax1.set_title('With noise')
+ax1.set_axis_off()
+
+ax2.imshow(img_r)
+ax2.set_title('Denoised')
+ax2.set_axis_off()
+
+ax3.imshow(image)
+ax3.set_title('Original')
+ax3.set_axis_off()
